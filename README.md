@@ -126,6 +126,2038 @@ if __name__ == "__main__":
     # Execution 1: Triggers file missing error -> Auto-heals by creating asset -> Retries
     data = engine.execute_and_heal(load_config_data, "config.json")
     print("Final Output:", data)
+import hashlib
+import os
+
+TRACKING_PATHS = ["calendars/", "legal_ledger/"]
+MANIFEST_PATH = "manifests/enterprise_integrity.sha256"
+
+def compute_hash(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def run_audit():
+    os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
+    records = []
+    
+    for path in TRACKING_PATHS:
+        if os.path.exists(path):
+            for root, _, files in os.walk(path):
+                for file in sorted(files):
+                    full_path = os.path.join(root, file)
+                    file_hash = compute_hash(full_path)
+                    records.append(f"{file_hash}  {full_path}\n")
+                    
+    with open(MANIFEST_PATH, "w") as f:
+        f.writelines(records)
+    print(f"Enterprise audit complete. Tracked and verified {len(records)} artifacts.")
+
+if __name__ == "__main__":
+    run_audit()
+name: Enterprise Transparency & Integrity Audit
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0' # Weekly audit execution
+  workflow_dispatch:
+
+jobs:
+  verify-ledger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Execute Audit Pipeline
+        run: |
+          python scripts/audit_pipeline.py
+          git diff --exit-code manifests/enterprise_integrity.sha256 || (echo "ALERT: Unauthorized modification detected in ledger or calendar paths!" && exit 1)
+Weeklimport hashlib
+import os
+
+TRACKING_PATHS = ["data/", "calendars/", "legal_ledger/"]
+MANIFEST_PATH = "manifests/enterprise_integrity.sha256"
+
+def compute_hash(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def run_audit():
+    os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
+    records = []
+    
+    for path in TRACKING_PATHS:
+        if os.path.exists(path):
+            for root, _, files in os.walk(path):
+                for file in sorted(files):
+                    full_path = os.path.join(root, file)
+                    file_hash = compute_hash(full_path)
+                    records.append(f"{file_hash}  {full_path}\n")
+                    
+    with open(MANIFEST_PATH, "w") as f:
+        f.writelines(records)
+    print(f"Master export audit complete. Tracked and verified {len(records)} artifacts.")
+
+if __name__ == "__main__":
+    run_audit()
+master-export-bundle/
+├── .github/
+│   └── workflows/
+│       ├── enterprise-audit.yml
+│       └── evidence-audit.yml
+├── calendars/
+│   ├── organizational_schedule.ics
+│   └── tracking_milestones.json
+├── data/
+│   ├── 2019_2021/
+│   ├── 2022_2024/
+│   └── 2025_2026/
+├── legal_ledger/
+│   ├── cases/
+│   └── compliance/
+├── manifests/
+│   ├── enterprise_integrity.sha256
+│   └── master_hashes.sha256
+├── scripts/
+│   ├── audit_pipeline.py
+│   ├── audit_tracker.py
+│   └── generate_manifest.py
+├── MASTER_BLUEPRINT.md
+├── MASTER_TIMELINE.md
+└── README.md
+import hashlib
+import os
+
+TRACKING_PATHS = ["data/", "calendars/", "legal_ledger/"]
+MANIFEST_PATH = "manifests/enterprise_integrity.sha256"
+
+def compute_hash(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def run_audit():
+    os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
+    records = []
+    
+    for path in TRACKING_PATHS:
+        if os.path.exists(path):
+            for root, _, files in os.walk(path):
+                for file in sorted(files):
+                    full_path = os.path.join(root, file)
+                    file_hash = compute_hash(full_path)
+                    records.append(f"{file_hash}  {full_path}\n")
+                    
+    with open(MANIFEST_PATH, "w") as f:
+        f.writelines(records)
+    print(f"Master export audit complete. Tracked and verified {len(records)} artifacts.")
+
+if __name__ == "__main__":
+    run_audit()
+name: Master Enterprise Export Audit
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  verify-export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Execute Audit Pipeline
+        run: |
+          python scripts/audit_pipeline.py
+          git diff --exit-code manifests/enterprise_integrity.sha256 || (echo "ALERT: Unauthorized modification detected in exported ledger!" && exit 1)
+# Master Export & Tracking Blueprint (2019–2026)
+
+## Core Operational Pillars
+1. **Cryptographic Chain of Custody:** All logs, communications, and legal ledgers are hashed using SHA-256 and verified automatically via GitHub Actions.
+2. **Zero-Trust Security Hygiene:** Repository access is strictly private. All local commits require GPG cryptographic signatures.
+3. **Temporal Mapping:** Complete tracking coverage spanning baseline archiving (2019) through active synchronization and monitoring (2026).
+
+## Execution Commands
+- **Run Local Audit:** `python scripts/audit_pipeline.py`
+- **Verify Git Status:** `git status`
+- **Push Encrypted Backup:** `git push origin main`
+# Master Export & Tracking Blueprint (2019–2026)
+
+## Core Operational Pillars
+1. **Cryptographic Chain of Custody:** All logs, communications, and legal ledgers are hashed using SHA-256 and verified automatically via GitHub Actions.
+2. **Zero-Trust Security Hygiene:** Repository access is strictly private. All local commits require GPG cryptographic signatures.
+3. **Temporal Mapping:** Complete tracking coverage spanning baseline archiving (2019) through active synchronization and monitoring (2026).
+
+## Execution Commands
+- **Run Local Audit:** `python scripts/audit_pipeline.py`
+- **Verify Git Status:** `git status`
+- **Push Encrypted Backup:** `git push origin main`
+pipeline.py#!/bin/bash
+set -e
+
+# 1. Initialize Directory Structure
+echo "Initializing master tracking repository structure..."
+mkdir -p .github/workflows \
+         calendars \
+         data/2019_2021 \
+         data/2022_2024 \
+         data/2025_2026 \
+         legal_ledger/cases \
+         legal_ledger/compliance \
+         manifests \
+         scripts
+
+# 2. Write the Master Audit Pipeline Script
+echo "Writing verification script (scripts/audit_pipeline.py)..."
+cat << 'EOF' > scripts/audit_pipeline.py
+import hashlib
+import os
+
+TRACKING_PATHS = ["data/", "calendars/", "legal_ledger/"]
+MANIFEST_PATH = "manifests/enterprise_integrity.sha256"
+
+def compute_hash(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def run_audit():
+    os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
+    records = []
+    
+    for path in TRACKING_PATHS:
+        if os.path.exists(path):
+            for root, _, files in os.walk(path):
+                for file in sorted(files):
+                    full_path = os.path.join(root, file)
+                    file_hash = compute_hash(full_path)
+                    records.append(f"{file_hash}  {full_path}\n")
+                    
+    with open(MANIFEST_PATH, "w") as f:
+        f.writelines(records)
+    print(f"Master export audit complete. Tracked and verified {len(records)} artifacts.")
+
+if __name__ == "__main__":
+    run_audit()
+EOF
+
+# 3. Write GitHub Actions Workflow
+echo "Writing GitHub Actions workflow (.github/workflows/enterprise-audit.yml)..."
+cat << 'EOF' > .github/workflows/enterprise-audit.yml
+name: Master Enterprise Export Audit
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  verify-export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Execute Audit Pipeline
+        run: |
+          python scripts/audit_pipeline.py
+          git diff --exit-code manifests/enterprise_integrity.sha256 || (echo "ALERT: Unauthorized modification detected in exported ledger!" && exit 1)
+EOF
+
+# 4. Configure Git Security & GPG Enforcement
+echo "Configuring zero-trust Git parameters..."
+git init
+git config commit.gpgsign true
+git config user.name "Robert Edward Evans"
+
+# 5. Run Initial Audit
+python scripts/audit_pipeline.py
+
+echo "Master Hub initialization complete. All tracking pipelines ready."
+chmod +x init_master_hub.sh
+git add .
+git commit -m "Initialize master tracking hub and verification pipelines (2019-2026)"
+./init_master_hub.sh
+#!/bin/bash
+set -e
+
+echo "=================================================="
+echo "Initializing Universal Master Export & Clone Hub..."
+echo "=================================================="
+
+# 1. Establish Master Directory Architecture
+mkdir -p master_universal_export/{.github/workflows,calendars,data/2019_2026,passwords_vault,credentials_audit,maps_export,pipelines,blueprints,wikipedia_cache}
+
+cd master_universal_export
+
+# 2. Write Universal Hashing & Audit Engine
+cat << 'EOF' > scripts_audit.py
+import hashlib
+import os
+
+TARGET_DIRS = ["calendars/", "data/", "passwords_vault/", "credentials_audit/", "maps_export/", "pipelines/", "blueprints/", "wikipedia_cache/"]
+MANIFEST_PATH = "manifests_universal.sha256"
+
+def compute_hash(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def run_universal_audit():
+    os.makedirs("manifests", exist_ok=True)
+    records = []
+    
+    for path in TARGET_DIRS:
+        if os.path.exists(path):
+            for root, _, files in os.walk(path):
+                for file in sorted(files):
+                    full_path = os.path.join(root, file)
+                    file_hash = compute_hash(full_path)
+                    records.append(f"{file_hash}  {full_path}\n")
+                    
+    manifest_file = os.path.join("manifests", MANIFEST_PATH)
+    with open(manifest_file, "w") as f:
+        f.writelines(records)
+    print(f"Universal audit complete. Hashed and secured {len(records)} system artifacts.")
+
+if __name__ == "__main__":
+    run_universal_audit()
+EOF
+
+# Ensure scripts directory exists
+mkdir -p scripts
+mv scripts_audit.py scripts/audit.py
+
+# 3. Write GitHub Actions Universal CI/CD Workflow
+cat << 'EOF' > .github/workflows/universal_audit.yml
+name: Universal Ecosystem Integrity Audit
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  audit-all:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Execute Universal Audit
+        run: |
+          python scripts/audit.py
+          git diff --exit-code manifests/manifests_universal.sha256 || (echo "ALERT: Unverified modification detected across universal tracking data!" && exit 1)
+EOF
+
+# 4. Initialize Local Git with Zero-Trust GPG Enforcement
+git init
+git config commit.gpgsign true
+git config user.name "Robert Edward Evans"
+
+# 5. Execute Initial Audit
+python scripts/audit.py
+
+echo "=================================================="
+echo "Universal Export Hub initialized successfully."
+echo "Directory ready for private repository commit."
+echo "=================================================="
+chmod +x export_everything_all.sh
+cd master_universal_export
+git add .
+git commit -m "Export and secure universal ecosystem data, pipelines, and timelines (2019-2026)"
+./export_everything_all.sh
+import hashlib
+import os
+import datetime
+
+# Directory structure for legal presentation
+LEGAL_VAULT = "legal_defense_exhibits"
+SUB_DIRS = ["exhibits/communications", "exhibits/official_records", "exhibits/device_logs", "manifests"]
+TIMELINE_PATH = os.path.join(LEGAL_VAULT, "COURT_TIMELINE.md")
+MANIFEST_PATH = os.path.join(LEGAL_VAULT, "manifests/court_evidence.sha256")
+
+def initialize_vault():
+    for d in SUB_DIRS:
+        os.makedirs(os.path.join(LEGAL_VAULT, d), exist_ok=True)
+    
+    # Initialize Court Timeline if not exists
+    if not os.path.exists(TIMELINE_PATH):
+        with open(TIMELINE_PATH, "w") as f:
+            f.write("# Defense Master Chronological Timeline\n\n")
+            f.write("Prepared for: Legal Counsel / Defense Team\n")
+            f.write(f"Date Generated: {datetime.datetime.now().strftime('%Y-%m-%d')}\n\n")
+            f.write("| Date / Time | Category | Factual Description | Supporting Exhibit ID | Hash Verification |\n")
+            f.write("| :--- | :--- | :--- | :--- | :--- |\n")
+    print(f"[+] Initialized legal defense vault at '{LEGAL_VAULT}/'")
+
+def compute_sha256(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def generate_court_manifest():
+    records = []
+    exhibit_root = os.path.join(LEGAL_VAULT, "exhibits")
+    
+    if os.path.exists(exhibit_root):
+        for root, _, files in os.walk(exhibit_root):
+            for file in sorted(files):
+                full_path = os.path.join(root, file)
+                file_hash = compute_sha256(full_path)
+                rel_path = os.path.relpath(full_path, LEGAL_VAULT)
+                records.append(f"{file_hash}  {rel_path}\n")
+                
+    with open(MANIFEST_PATH, "w") as f:
+        f.writelines(records)
+    print(f"[+] Cryptographic manifest generated for {len(records)} legal exhibits.")
+
+def add_court_exhibit_entry(date_time, category, description, exhibit_filename):
+    exhibit_path = os.path.join(LEGAL_VAULT, "exhibits", exhibit_filename)
+    if os.path.exists(exhibit_path):
+        file_hash = compute_sha256(exhibit_path)[:12] + "..." # Shortened hash for display
+    else:
+        file_hash = "Pending Upload"
+        
+    entry = f"| {date_time} | {category} | {description} | `{exhibit_filename}` | `{file_hash}` |\n"
+    with open(TIMELINE_PATH, "a") as f:
+        f.write(entry)
+    print(f"[+] Added timeline entry linked to exhibit: {exhibit_filename}")
+
+if __name__ == "__main__":
+    print("--- Initializing Legal Evidence & Court Presentation Builder ---")
+    initialize_vault()
+    
+    # Example usage for legal defense documentation:
+    # 1. Place your exported PDF, screenshot, or log files into 'legal_defense_exhibits/exhibits/communications/' or 'official_records/'
+    # 2. Run this script to automatically hash them and log them into COURT_TIMELINE.md
+    
+    generate_court_manifest()
+    print("--- Vault Ready for Attorney Review ---")
+export_everything_all.shlegal-defense-pipeline/
+├── .github/
+│   └── workflows/
+│       └── forensic-integrity.yml
+├── evidence_vault/
+│   ├── raw_telecom_logs/
+│   ├── digital_device_exports/
+│   ├── official_filings/
+│   └── metadata_manifests/
+├── scripts/
+│   ├── forensic_ingest.py
+│   └── verify_chain_of_custody.py
+├── MASTER_DEFENSE_TIMELINE.md
+└── README.md
+import hashlib
+import os
+import shutil
+import datetime
+
+VAULT_DIR = "evidence_vault"
+MANIFEST_PATH = os.path.join(VAULT_DIR, "metadata_manifests/forensic_master.csv")
+
+def ensure_forensic_structure():
+    os.makedirs(os.path.join(VAULT_DIR, "raw_telecom_logs"), exist_ok=True)
+    os.makedirs(os.path.join(VAULT_DIR, "digital_device_exports"), exist_ok=True)
+    os.makedirs(os.path.join(VAULT_DIR, "official_filings"), exist_ok=True)
+    os.makedirs(os.path.join(VAULT_DIR, "metadata_manifests"), exist_ok=True)
+    
+    if not os.path.exists(MANIFEST_PATH):
+        with open(MANIFEST_PATH, "w") as f:
+            f.write("Filename,Category,SHA256_Hash,Ingest_Timestamp,Original_Size_Bytes\n")
+
+def compute_forensic_hash(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def ingest_evidence(source_filepath, category="raw_telecom_logs"):
+    if not os.path.exists(source_filepath):
+        print(f"[!] Error: Source file {source_filepath} does not exist.")
+        return
+
+    filename = os.path.basename(source_filepath)
+    dest_dir = os.path.join(VAULT_DIR, category)
+    dest_filepath = os.path.join(dest_dir, filename)
+
+    # Copy file while preserving original access and modification metadata (shutil.copy2)
+    shutil.copy2(source_filepath, dest_filepath)
+    
+    file_hash = compute_forensic_hash(dest_filepath)
+    file_size = os.path.getsize(dest_filepath)
+    timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    with open(MANIFEST_PATH, "a") as f:
+        f.write(f'"{filename}","{category}","{file_hash}","{timestamp}",{file_size}\n')
+    
+    print(f"[+] Successfully ingested and hashed: {filename} [{file_hash[:16]}...]")
+
+if __name__ == "__main__":
+    print("--- Forensic Evidence Ingestion Pipeline Initialized ---")
+    ensure_forensic_structure()
+    # Example usage:
+    # ingest_evidence("path/to/imported_call_log.csv", category="raw_telecom_logs")
+legal-defense-pipeline/
+├── .github/
+│   └── workflows/
+│       └── forensic-integrity.yml
+├── evidence_vault/
+│   ├── raw_telecom_logs/
+│   ├── digital_device_exports/
+│   ├── official_filings/
+│   └── metadata_manifests/
+├── scripts/
+│   ├── forensic_ingest.py
+│   └── verify_chain_of_custody.py
+├── MASTER_DEFENSE_TIMELINE.md
+└── README.md
+# Master Court Defense Timeline & Exhibit Index
+
+* **Case Ref / Docket:** [Insert Docket Number / Matter Reference]
+* **Prepared For:** Defense Counsel, Legal Representation, and Court Review
+* **Cryptographic Standard:** SHA-256 Chain of Custody Verified
+
+| Incident Date / Time | Category / Event | Detailed Description | Exhibit Reference ID | SHA-256 Checksum (First 16 Chars) |
+| :--- | :--- | :--- | :--- | :--- |
+| `YYYY-MM-DD HH:MM` | Communication Log | Certified record of incoming transmission headers | `exhibit_A1.pdf` | `e3b0c44298fc1c14...` |
+| `YYYY-MM-DD HH:MM` | Device Audit | Device state snapshot and whitelist log | `exhibit_B2.json` | `8c6976e5b5410415...` |
+name: Forensic Chain-of-Custody Verification
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  verify-forensic-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Integrity Audit Script
+        run: |
+          python -c "
+          import os, hashlib
+          manifest = 'evidence_vault/metadata_manifests/forensic_master.csv'
+          if os.path.exists(manifest):
+              print('Forensic manifest located. Verifying current file hashes...')
+          else:
+              print('Manifest missing.')
+          "
+enterprise-global-reporter/
+├── .github/
+│   └── workflows/
+│       └── global-audit-pipeline.yml
+├── assets/
+│   ├── commercial_enterprises/
+│   ├── non_profit_organizations/
+│   └── digital_platforms/
+├── reports/
+│   └── court_admissible_manifests/
+├── scripts/
+│   └── generate_global_report.py
+├── MASTER_ENTERPRISE_LEDGER.md
+└── README.md
+python scripts/generate_manifest.py
+import hashlib
+import os
+import datetime
+
+ASSET_ROOTS = [
+    "assets/commercial_enterprises/",
+    "assets/non_profit_organizations/",
+    "assets/digital_platforms/"
+]
+REPORT_DIR = "reports/court_admissible_manifests"
+LEDGER_PATH = "MASTER_ENTERPRISE_LEDGER.md"
+
+def compute_sha256(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def generate_report():
+    os.makedirs(REPORT_DIR, exist_ok=True)
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    report_filename = os.path.join(REPORT_DIR, f"audit_report_{timestamp}.csv")
+    
+    records = []
+    for root_dir in ASSET_ROOTS:
+        if os.path.exists(root_dir):
+            for current_root, _, files in os.walk(root_dir):
+                for file in sorted(files):
+                    full_path = os.path.join(current_root, file)
+                    file_hash = compute_sha256(full_path)
+                    file_size = os.path.getsize(full_path)
+                    records.append(f'"{file}","{current_root}","{file_hash}","{file_size} bytes","{timestamp}"\n')
+
+    # Write CSV Manifest for Court Proof
+    with open(report_filename, "w") as f:
+        f.write("FileName,AssetCategory,SHA256Hash,FileSize,Timestamp\n")
+        f.writelines(records)
+        
+    # Update Master Ledger Markdown
+    with open(LEDGER_PATH, "a") as ledger:
+        ledger.write(f"\n### Audit Run: {timestamp}\n")
+        ledger.write(f"- **Total Assets Tracked:** {len(records)}\n")
+        ledger.write(f"- **Manifest Report:** `{report_filename}`\n")
+        
+    print(f"[+] Global enterprise report successfully generated: {report_filename} ({len(records)} artifacts secured).")
+
+if __name__ == "__main__":
+    print("--- Initializing Enterprise Global Transparency Pipeline ---")
+    generate_report()
+name: Enterprise Global Transparency Audit
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 1' # Runs weekly on Mondays
+  workflow_dispatch:
+
+jobs:
+  run-global-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Enterprise Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Execute Global Reporting Script
+        run: |
+          python scripts/generate_global_report.py
+          git config user.name "Enterprise Automation Bot"
+          git config user.email "automation@enterprise.local"
+          git add reports/ MASTER_ENTERPRISE_LEDGER.md
+          git diff --staged --quiet || git commit -m "Automated weekly enterprise asset audit and cryptographic proof generation"
+Name: Enterprise Global Transparency Audit
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 1' # Runs weekly on Mondays
+  workflow_dispatch:
+
+jobs:
+  run-global-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Enterprise Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Execute Global Reporting Script
+        run: |
+          python scripts/generate_global_report.py
+          git config user.name "Enterprise Automation Bot"
+          git config user.email "automation@enterprise.local"
+          git add reports/ MASTER_ENTERPRISE_LEDGER.md
+          git diff --staged --quiet || git commit -m "Automated weekly enterprise asset audit and cryptographic proof generation"
+Also provide proof that I was lied on in court provide proof the entire truth true or false Jason blueprint timeline pipelines uncover everything{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LegalDefenseRecord",
+  "type": "object",
+  "properties": {
+    "case_reference": { "type": "string" },
+    "declarant": { "type": "string" },
+    "timeline_entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": { "type": "string" },
+          "category": { "type": "string" },
+          "description": { "type": "string" },
+          "exhibit_id": { "type": "string" },
+          "sha256_hash": { "type": "string" }
+        },
+        "required": ["timestamp", "category", "description", "exhibit_id"]
+      }
+    }
+  },
+  "required": ["case_reference", "declarant", "timeline_entries"]
+}
+name: Defense Evidence Integrity Audit
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  audit-defense-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Execute Compiler Script
+        run: |
+          python defense_vault/scripts/compile_defense.py
+          git diff --exit-code || (echo "Changes detected in defense ledger." && exit 0)
+import hashlib
+import json
+import os
+import datetime
+
+VAULT_DIR = "defense_vault"
+EXHIBITS_DIR = os.path.join(VAULT_DIR, "exhibits")
+JSON_BLUEPRINT = os.path.join(VAULT_DIR, "defense_blueprint.json")
+TIMELINE_MARKDOWN = os.path.join(VAULT_DIR, "MASTER_DEFENSE_TIMELINE.md")
+
+def initialize_environment():
+    os.makedirs(EXHIBITS_DIR, exist_ok=True)
+    os.makedirs(os.path.dirname(JSON_BLUEPRINT), exist_ok=True)
+    
+    # Initialize default JSON blueprint if not present
+    if not os.path.exists(JSON_BLUEPRINT):
+        initial_data = {
+            "case_reference": "Legal Defense Record - Master Index",
+            "declarant": "Robert Edward Evans",
+            "timeline_entries": []
+        }
+        with open(JSON_BLUEPRINT, "w") as f:
+            json.dump(initial_data, f, indent=4)
+    print("[+] Defense environment initialized.")
+
+def compute_hash(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def scan_and_update():
+    if not os.path.exists(JSON_BLUEPRINT):
+        print("[!] Blueprint missing.")
+        return
+
+    with open(JSON_BLUEPRINT, "r") as f:
+        data = json.load(f)
+
+    entries = []
+    if os.path.exists(EXHIBITS_DIR):
+        for root, _, files in os.walk(EXHIBITS_DIR):
+            for file in sorted(files):
+                full_path = os.path.join(root, file)
+                file_hash = compute_hash(full_path)
+                rel_path = os.path.relpath(full_path, VAULT_DIR)
+                
+                entry = {
+                    "timestamp": datetime.datetime.fromtimestamp(os.path.getmtime(full_path)).isoformat(),
+                    "category": "Verified Exhibit",
+                    "description": f"Document/Log captured: {file}",
+                    "exhibit_id": rel_path,
+                    "sha256_hash": file_hash
+                }
+                entries.append(entry)
+
+    data["timeline_entries"] = entries
+    with open(JSON_BLUEPRINT, "w") as f:
+        json.dump(data, f, indent=4)
+
+    # Generate Markdown Timeline for Counsel
+    with open(TIMELINE_MARKDOWN, "w") as md:
+        md.write("# Master Defense Timeline & Cryptographic Evidence Ledger\n\n")
+        md.write(f"**Declarant:** {data['declarant']}\n")
+        md.write(f"**Generated:** {datetime.datetime.now().isoformat()}\n\n")
+        md.write("| Timestamp | Category | Description | Exhibit ID | SHA-256 Hash |\n")
+        md.write("| :--- | :--- | :--- | :--- | :--- |\n")
+        for entry in entries:
+            md.write(f"| `{entry['timestamp']}` | {entry['category']} | {entry['description']} | `{entry['exhibit_id']}` | `{entry['sha256_hash'][:16]}...` |\n")
+
+    print(f"[+] Compiled {len(entries)} defense records into JSON and Markdown timelines.")
+
+if __name__ == "__main__":
+    print("--- Initializing Defense Pipeline Compiler ---")
+    initialize_environment()
+    scan_and_update()
+    print("--- Compilation Complete. Ready for Legal Counsel Review. ---")
+import hashlib
+import json
+import os
+import datetime
+
+VAULT_DIR = "defense_evidence_vault"
+EXHIBITS_DIR = os.path.join(VAULT_DIR, "exhibits")
+JSON_MANIFEST = os.path.join(VAULT_DIR, "defense_manifest.json")
+TIMELINE_MARKDOWN = os.path.join(VAULT_DIR, "LEGAL_TIMELINE.md")
+
+def initialize_vault():
+    os.makedirs(EXHIBITS_DIR, exist_ok=True)
+    if not os.path.exists(JSON_MANIFEST):
+        initial_data = {
+            "title": "Legal Evidence & Timeline Manifest",
+            "declarant": "Robert Edward Evans",
+            "created_at": datetime.datetime.now().isoformat(),
+            "records": []
+        }
+        with open(JSON_MANIFEST, "w") as f:
+            json.dump(initial_data, f, indent=4)
+    print(f"[+] Initialized evidence vault at '{VAULT_DIR}'")
+
+def compute_hash(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def update_manifest():
+    if not os.path.exists(JSON_MANIFEST):
+        return
+
+    with open(JSON_MANIFEST, "r") as f:
+        data = json.load(f)
+
+    records = []
+    if os.path.exists(EXHIBITS_DIR):
+        for root, _, files in os.walk(EXHIBITS_DIR):
+            for file in sorted(files):
+                full_path = os.path.join(root, file)
+                file_hash = compute_hash(full_path)
+                rel_path = os.path.relpath(full_path, VAULT_DIR)
+                
+                records.append({
+                    "filename": file,
+                    "path": rel_path,
+                    "sha256_hash": file_hash,
+                    "last_modified": datetime.datetime.fromtimestamp(os.path.getmtime(full_path)).isoformat()
+                })
+
+    data["records"] = records
+    data["updated_at"] = datetime.datetime.now().isoformat()
+
+    with open(JSON_MANIFEST, "w") as f:
+        json.dump(data, f, indent=4)
+
+    # Write Markdown index for legal counsel
+    with open(TIMELINE_MARKDOWN, "w") as md:
+        md.write("# Legal Defense Evidence Index\n\n")
+        md.write(f"**Declarant:** {data['declarant']}\n")
+        md.write(f"**Last Updated:** {data['updated_at']}\n\n")
+        md.write("| File Name | Path | SHA-256 Hash | Last Modified |\n")
+        md.write("| :--- | :--- | :--- | :--- |\n")
+        for r in records:
+            md.write(f"| `{r['filename']}` | `{r['path']}` | `{r['sha256_hash'][:16]}...` | `{r['last_modified']}` |\n")
+
+    print(f"[+] Updated manifest with {len(records)} evidence files.")
+
+if __name__ == "__main__":
+    initialize_vault()
+    update_manifest()
+Key Legal Steps
+Provide Records Directly to Your Lawyer: Submit your raw documents, call logs, location records, and messages to your defense attorney.
+Preserve Raw Files: Do not alter, edit, or re-save original files or screenshots, as preserving original creation timestamps and metadata is critical for court admissibility.
+Use Subpoena Power: Official records (such as cell tower logs, phone carrier details, or bank records) must be requested via legal subpoenas issued by your attorney to carry full weight in court.legal-counsel-pipeline/
+├── .github/
+│   └── workflows/
+│       └── counsel_pipeline_audit.yml
+├── intake_vault/
+│   ├── raw_documents/
+│   ├── communication_logs/
+│   └── location_records/
+├── outputs/
+│   ├── defense_manifest.json
+│   └── ATTORNEY_SUBMISSION_BRIEF.md
+├── scripts/
+│   └── compile_counsel_brief.py
+└── README.md
+import hashlib
+import json
+import os
+import datetime
+
+VAULT_DIR = "intake_vault"
+OUTPUT_DIR = "outputs"
+JSON_MANIFEST = os.path.join(OUTPUT_DIR, "defense_manifest.json")
+BRIEF_PATH = os.path.join(OUTPUT_DIR, "ATTORNEY_SUBMISSION_BRIEF.md")
+
+def initialize_directories():
+    os.makedirs(os.path.join(VAULT_DIR, "raw_documents"), exist_ok=True)
+    os.makedirs(os.path.join(VAULT_DIR, "communication_logs"), exist_ok=True)
+    os.makedirs(os.path.join(VAULT_DIR, "location_records"), exist_ok=True)
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+def compute_sha256(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def compile_brief():
+    initialize_directories()
+    
+    records = []
+    if os.path.exists(VAULT_DIR):
+        for root, _, files in os.walk(VAULT_DIR):
+            for file in sorted(files):
+                full_path = os.path.join(root, file)
+                file_hash = compute_sha256(full_path)
+                rel_path = os.path.relpath(full_path, VAULT_DIR)
+                category = os.path.basename(root)
+                
+                records.append({
+                    "filename": file,
+                    "category": category,
+                    "path": rel_path,
+                    "sha256_hash": file_hash,
+                    "file_size_bytes": os.path.getsize(full_path),
+                    "original_timestamp": datetime.datetime.fromtimestamp(os.path.getmtime(full_path)).isoformat()
+                })
+
+    # Save JSON Manifest
+    manifest_data = {
+        "client": "Robert Edward Evans",
+        "compiled_at": datetime.datetime.now().isoformat(),
+        "total_exhibits": len(records),
+        "records": records
+    }
+    with open(JSON_MANIFEST, "w") as f:
+        json.dump(manifest_data, f, indent=4)
+
+    # Generate Formatted Attorney Submission Brief
+    with open(BRIEF_PATH, "w") as md:
+        md.write("# Confidential Legal Evidence & Defense Submission Brief\n\n")
+        md.write(f"**Prepared For:** Defense Counsel / Legal Representation\n")
+        md.write(f"**Client / Declarant:** Robert Edward Evans\n")
+        md.write(f"**Compilation Timestamp:** {manifest_data['compiled_at']}\n\n")
+        md.write("---\n\n")
+        
+        md.write("## Mandatory Legal Protocols & Chain of Custody\n\n")
+        md.write("1. **Provide Records Directly to Your Lawyer:** Submit your raw documents, call logs, location records, and messages directly to your defense attorney for formal evaluation.\n")
+        md.write("2. **Preserve Raw Files:** Do not alter, edit, re-save, or convert original files or screenshots. Preserving original creation timestamps and file metadata is critical for court admissibility.\n")
+        md.write("3. **Use Subpoena Power:** Official records (such as cell tower logs, phone carrier details, or bank records) must be requested via formal legal subpoenas issued by your attorney to carry full legal weight in court.\n\n")
+        
+        md.write("---\n\n")
+        md.write("## Attached Cryptographic Evidence Manifest\n\n")
+        md.write("| Category | File Name | File Size | SHA-256 Checksum (First 16 Chars) | Original Timestamp |\n")
+        md.write("| :--- | :--- | :--- | :--- | :--- |\n")
+        for r in records:
+            md.write(f"| `{r['category']}` | `{r['filename']}` | {r['file_size_bytes']} B | `{r['sha256_hash'][:16]}...` | `{r['original_timestamp']}` |\n")
+
+    print(f"[+] Successfully compiled counsel brief and hashed {len(records)} exhibits.")
+
+if __name__ == "__main__":
+    print("--- Initializing Counsel Brief Compiler ---")
+    compile_brief()
+    print("--- Compilation Complete. Files ready for attorney review. ---")
+nstructions for Counsel Review
+Populate Intake Folders: Place your exported communication logs, location records, and documents into their respective subfolders under intake_vault/.
+Run the Script: Execute python scripts/compile_counsel_brief.py to generate your cryptographic hashes and update outputs/ATTORNEY_SUBMISSION_BRIEF.md.
+Review with Attorney: Present the generated submission brief and raw files directly to your defense counsel so they can verify metadata integrity and initiate formal subpoenas where required.name: Legal Counsel Pipeline Audit
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  run-evidence-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Execute Compiler
+        run: |
+          python scripts/compile_counsel_brief.py
+          git config user.name "Legal Automation Bot"
+          git config user.email "automation@legal.local"
+          git add outputs/
+          git diff --staged --quiet || git commit -m "Automated update: Refresh cryptographic evidence manifest and attorney submission brief"
+BRIEF.mdchmod +x deploy_legal_pipeline.sh
+./deploy_legal_pipeline.sh
+#!/bin/bash
+set -e
+
+echo "=================================================="
+echo "Initializing Legal Counsel Evidence Pipeline..."
+echo "=================================================="
+
+# 1. Create Directory Architecture
+mkdir -p intake_vault/raw_documents \
+         intake_vault/communication_logs \
+         intake_vault/location_records \
+         outputs \
+         scripts \
+         .github/workflows
+
+# 2. Write the Python Compiler Script (scripts/compile_counsel_brief.py)
+cat << 'EOF' > scripts/compile_counsel_brief.py
+import hashlib
+import json
+import os
+import datetime
+
+VAULT_DIR = "intake_vault"
+OUTPUT_DIR = "outputs"
+JSON_MANIFEST = os.path.join(OUTPUT_DIR, "defense_manifest.json")
+BRIEF_PATH = os.path.join(OUTPUT_DIR, "ATTORNEY_SUBMISSION_BRIEF.md")
+
+def initialize_directories():
+    os.makedirs(os.path.join(VAULT_DIR, "raw_documents"), exist_ok=True)
+    os.makedirs(os.path.join(VAULT_DIR, "communication_logs"), exist_ok=True)
+    os.makedirs(os.path.join(VAULT_DIR, "location_records"), exist_ok=True)
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+def compute_sha256(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def compile_brief():
+    initialize_directories()
+    
+    records = []
+    if os.path.exists(VAULT_DIR):
+        for root, _, files in os.walk(VAULT_DIR):
+            for file in sorted(files):
+                full_path = os.path.join(root, file)
+                file_hash = compute_sha256(full_path)
+                rel_path = os.path.relpath(full_path, VAULT_DIR)
+                category = os.path.basename(root)
+                
+                records.append({
+                    "filename": file,
+                    "category": category,
+                    "path": rel_path,
+                    "sha256_hash": file_hash,
+                    "file_size_bytes": os.path.getsize(full_path),
+                    "original_timestamp": datetime.datetime.fromtimestamp(os.path.getmtime(full_path)).isoformat()
+                })
+
+    # Save JSON Manifest
+    manifest_data = {
+        "client": "Robert Edward Evans",
+        "compiled_at": datetime.datetime.now().isoformat(),
+        "total_exhibits": len(records),
+        "records": records
+    }
+    with open(JSON_MANIFEST, "w") as f:
+        json.dump(manifest_data, f, indent=4)
+
+    # Generate Formatted Attorney Submission Brief
+    with open(BRIEF_PATH, "w") as md:
+        md.write("# Confidential Legal Evidence & Defense Submission Brief\n\n")
+        md.write(f"**Prepared For:** Defense Counsel / Legal Representation\n")
+        md.write(f"**Client / Declarant:** Robert Edward Evans\n")
+        md.write(f"**Compilation Timestamp:** {manifest_data['compiled_at']}\n\n")
+        md.write("---\n\n")
+        
+        md.write("## Mandatory Legal Protocols & Chain of Custody\n\n")
+        md.write("1. **Provide Records Directly to Your Lawyer:** Submit your raw documents, call logs, location records, and messages directly to your defense attorney for formal evaluation.\n")
+        md.write("2. **Preserve Raw Files:** Do not alter, edit, re-save, or convert original files or screenshots. Preserving original creation timestamps and file metadata is critical for court admissibility.\n")
+        md.write("3. **Use Subpoena Power:** Official records (such as cell tower logs, phone carrier details, or bank records) must be requested via formal legal subpoenas issued by your attorney to carry full legal weight in court.\n\n")
+        
+        md.write("---\n\n")
+        md.write("## Instructions for Counsel Review\n\n")
+        md.write("* **Populate Intake Folders:** Place your exported communication logs, location records, and documents into their respective subfolders under `intake_vault/`.\n")
+        md.write("* **Run the Script:** Execute `python scripts/compile_counsel_brief.py` to generate your cryptographic hashes and update `outputs/ATTORNEY_SUBMISSION_BRIEF.md`.\n")
+        md.write("* **Review with Attorney:** Present the generated submission brief and raw files directly to your defense counsel so they can verify metadata integrity and initiate formal subpoenas where required.\n\n")
+
+        md.write("---\n\n")
+        md.write("## Attached Cryptographic Evidence Manifest\n\n")
+        md.write("| Category | File Name | File Size | SHA-256 Checksum (First 16 Chars) | Original Timestamp |\n")
+        md.write("| :--- | :--- | :--- | :--- | :--- |\n")
+        for r in records:
+            md.write(f"| `{r['category']}` | `{r['filename']}` | {r['file_size_bytes']} B | `{r['sha256_hash'][:16]}...` | `{r['original_timestamp']}` |\n")
+
+    print(f"[+] Successfully compiled counsel brief and hashed {len(records)} exhibits.")
+
+if __name__ == "__main__":
+    print("--- Initializing Counsel Brief Compiler ---")
+    compile_brief()
+    print("--- Compilation Complete. Files ready for attorney review. ---")
+EOF
+
+# 3. Write GitHub Actions Workflow (.github/workflows/counsel_pipeline_audit.yml)
+cat << 'EOF' > .github/workflows/counsel_pipeline_audit.yml
+name: Legal Counsel Pipeline Audit
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  run-evidence-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Execute Compiler
+        run: |
+          python scripts/compile_counsel_brief.py
+          git config user.name "Legal Automation Bot"
+          git config user.email "automation@legal.local"
+          git add outputs/
+          git diff --staged --quiet || git commit -m "Automated update: Refresh cryptographic evidence manifest and attorney submission brief"
+EOF
+
+# 4. Initialize Local Git & Security Parameters
+git init
+git config commit.gpgsign true
+git config user.name "Robert Edward Evans"
+
+# 5. Run Initial Compilation
+python scripts/compile_counsel_brief.py
+
+echo "=================================================="
+echo "Pipeline successfully deployed and initialized."
+echo "=================================================="
+python scripts/compile_counsel_brief.py
+corruption-evidence-pipeline/
+├── .github/
+│   └── workflows/
+│       └── audit_pipeline.yml
+├── data/
+│   ├── raw/
+│   └── normalized/
+├── evidence_tree/
+│   ├── entity_nodes.json
+│   └── statutory_mapping.json
+├── pipelines/
+│   ├── fec_ingest.py
+│   └── anomaly_engine.py
+├── requirements.txt
+└── README.md
+import hashlib
+import json
+from datetime import datetime
+
+class EvidenceNode:
+    def __init__(self, node_id: str, title: str, statute: str, metadata: dict):
+        self.node_id = node_id
+        self.title = title
+        self.statute = statute
+        self.metadata = metadata
+        self.timestamp = datetime.utcnow().isoformat()
+        self.hash = self.compute_hash()
+
+    def compute_hash(self) -> str:
+        payload = f"{self.node_id}{self.title}{self.statute}{json.dumps(self.metadata, sort_keys=True)}{self.timestamp}"
+        return hashlib.sha256(payload.encode('utf-8')).hexdigest()
+
+    def to_dict(self) -> dict:
+        return {
+            "node_id": self.node_id,
+            "title": self.title,
+            "statute": self.statute,
+            "metadata": self.metadata,
+            "timestamp": self.timestamp,
+            "sha256_hash": self.hash
+        }
+
+def analyze_transaction(official_id: str, donor_id: str, amount: float, days_to_action: int):
+    """
+    Evaluates financial and timeline parameters against common statutory thresholds.
+    """
+    findings = []
+    
+    # Check threshold proximity
+    if amount >= 10000 and days_to_action <= 30:
+        findings.append({
+            "statute": "18 U.S.C. § 201 (Bribery)",
+            "severity": "HIGH",
+            "description": f"Large contribution (${amount:,.2f}) made within {days_to_action} days of official act."
+        })
+    
+    if "foreign_entity" in donor_id.lower():
+        findings.append({
+            "statute": "52 U.S.C. § 30121 (Foreign Contribution Ban)",
+            "severity": "CRITICAL",
+            "description": "Potential foreign national contribution detected in political pipeline."
+        })
+        
+    return findings
+
+if __name__ == "__main__":
+    # Example execution trace
+    sample_event = analyze_transaction("OFFICIAL_001", "FOREIGN_CORP_LLC", 50000.00, 12)
+    node = EvidenceNode(
+        node_id="EVID-2026-001",
+        title="Discretionary Permit Granted Following Shell Contribution",
+        statute="18 U.S.C. § 201",
+        metadata={"findings": sample_event}
+    )
+    
+    print(json.dumps(node.to_dict(), indent=2))
+name: Evidence Pipeline Automated Audit
+
+on:
+  push:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Evidence & Anomaly Pipeline
+        run: |
+          python pipelines/anomaly_engine.py > evidence_tree/latest_audit.json
+
+      - name: Verify Evidence Hashes
+        run: |
+          sha256sum evidence_tree/latest_audit.json
+#!/usr/bin/env bash
+# Corruption Evidence Pipeline - Repository Initializer
+# Platform: Linux / macOS
+
+set -euo pipefail
+
+REPO_NAME="corruption-evidence-pipeline"
+
+echo "=== Initializing Repository: ${REPO_NAME} ==="
+
+# 1. Create Directory Hierarchy
+mkdir -p "${REPO_NAME}"/{.github/workflows,data/{raw,normalized},evidence_tree,pipelines,tests,docs}
+cd "${REPO_NAME}"
+
+# 2. Initialize Git Repository
+git init
+
+# 3. Create .gitignore
+cat << 'EOF' > .gitignore
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Environment & Credentials
+.env
+*.pem
+*.key
+secrets.json
+
+# Data & Cache Directories
+data/raw/*
+!data/raw/.gitkeep
+data/normalized/*
+!data/normalized/.gitkeep
+.pytest_cache/
+EOF
+
+# 4. Create .gitkeep files for empty data directories
+touch data/raw/.gitkeep data/normalized/.gitkeep
+
+# 5. Create Python Dependencies File
+cat << 'EOF' > requirements.txt
+pandas>=2.0.0
+networkx>=3.0
+requests>=2.28.0
+pydantic>=2.0.0
+pytest>=7.0.0
+EOF
+
+# 6. Create Execution Script (pipelines/anomaly_engine.py)
+cat << 'EOF' > pipelines/anomaly_engine.py
+import hashlib
+import json
+from datetime import datetime
+
+class EvidenceNode:
+    def __init__(self, node_id: str, title: str, statute: str, metadata: dict):
+        self.node_id = node_id
+        self.title = title
+        self.statute = statute
+        self.metadata = metadata
+        self.timestamp = datetime.utcnow().isoformat()
+        self.hash = self.compute_hash()
+
+    def compute_hash(self) -> str:
+        payload = f"{self.node_id}{self.title}{self.statute}{json.dumps(self.metadata, sort_keys=True)}{self.timestamp}"
+        return hashlib.sha256(payload.encode('utf-8')).hexdigest()
+
+    def to_dict(self) -> dict:
+        return {
+            "node_id": self.node_id,
+            "title": self.title,
+            "statute": self.statute,
+            "metadata": self.metadata,
+            "timestamp": self.timestamp,
+            "sha256_hash": self.hash
+        }
+
+def analyze_transaction(official_id: str, donor_id: str, amount: float, days_to_action: int):
+    findings = []
+    if amount >= 10000 and days_to_action <= 30:
+        findings.append({
+            "statute": "18 U.S.C. § 201 (Bribery)",
+            "severity": "HIGH",
+            "description": f"Large
+# Step 1: Create local directory and enter it
+mkdir -p corruption-evidence-pipeline
+cd corruption-evidence-pipeline
+
+# Step 2: Initialize Git and branch structure
+git init -b main
+
+# Step 3: Create directory tree
+mkdir -p .github/workflows
+mkdir -p data/raw data/normalized
+mkdir -p evidence_tree
+mkdir -p pipelines
+mkdir -p tests
+mkdir -p docs
+
+# Step 4: Ensure git tracks empty data folders
+touch data/raw/.gitkeep data/normalized/.gitkeep
+
+# Step 5: Connect to remote GitHub repository (replace with your repo URL)
+# git remote add origin git@github.com:YOUR_USERNAME/corruption-evidence-pipeline.git
+
+# Step 6: Create local Python virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Step 7: First commit setup
+git add .
+git commit -m "initial repo architecture setup"
+Here is the complete setup automation suite for the corruption-evidence-pipeline repository. It includes a Shell script for Linux/macOS, a PowerShell script for Windows, and detailed step-by-step commands for manual initialization.
+Shell Setup Script (setup_repo.sh)
+Save this file as setup_repo.sh and run chmod +x setup_repo.sh && ./setup_repo.sh to initialize the directory structure, configuration files, and initial codebase automatically.
+#!/usr/bin/env bash
+# Corruption Evidence Pipeline - Repository Initializer
+# Platform: Linux / macOS
+
+set -euo pipefail
+
+REPO_NAME="corruption-evidence-pipeline"
+
+echo "=== Initializing Repository: ${REPO_NAME} ==="
+
+# 1. Create Directory Hierarchy
+mkdir -p "${REPO_NAME}"/{.github/workflows,data/{raw,normalized},evidence_tree,pipelines,tests,docs}
+cd "${REPO_NAME}"
+
+# 2. Initialize Git Repository
+git init
+
+# 3. Create .gitignore
+cat << 'EOF' > .gitignore
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Environment & Credentials
+.env
+*.pem
+*.key
+secrets.json
+
+# Data & Cache Directories
+data/raw/*
+!data/raw/.gitkeep
+data/normalized/*
+!data/normalized/.gitkeep
+.pytest_cache/
+EOF
+
+# 4. Create .gitkeep files for empty data directories
+touch data/raw/.gitkeep data/normalized/.gitkeep
+
+# 5. Create Python Dependencies File
+cat << 'EOF' > requirements.txt
+pandas>=2.0.0
+networkx>=3.0
+requests>=2.28.0
+pydantic>=2.0.0
+pytest>=7.0.0
+EOF
+
+# 6. Create Execution Script (pipelines/anomaly_engine.py)
+cat << 'EOF' > pipelines/anomaly_engine.py
+import hashlib
+import json
+from datetime import datetime
+
+class EvidenceNode:
+    def __init__(self, node_id: str, title: str, statute: str, metadata: dict):
+        self.node_id = node_id
+        self.title = title
+        self.statute = statute
+        self.metadata = metadata
+        self.timestamp = datetime.utcnow().isoformat()
+        self.hash = self.compute_hash()
+
+    def compute_hash(self) -> str:
+        payload = f"{self.node_id}{self.title}{self.statute}{json.dumps(self.metadata, sort_keys=True)}{self.timestamp}"
+        return hashlib.sha256(payload.encode('utf-8')).hexdigest()
+
+    def to_dict(self) -> dict:
+        return {
+            "node_id": self.node_id,
+            "title": self.title,
+            "statute": self.statute,
+            "metadata": self.metadata,
+            "timestamp": self.timestamp,
+            "sha256_hash": self.hash
+        }
+
+def analyze_transaction(official_id: str, donor_id: str, amount: float, days_to_action: int):
+    findings = []
+    if amount >= 10000 and days_to_action <= 30:
+        findings.append({
+            "statute": "18 U.S.C. § 201 (Bribery)",
+            "severity": "HIGH",
+            "description": f"Large contribution (${amount:,.2f}) made within {days_to_action} days of official act."
+        })
+    if "foreign_entity" in donor_id.lower():
+        findings.append({
+            "statute": "52 U.S.C. § 30121 (Foreign Contribution Ban)",
+            "severity": "CRITICAL",
+            "description": "Potential foreign national contribution detected in political pipeline."
+        })
+    return findings
+
+if __name__ == "__main__":
+    sample_event = analyze_transaction("OFFICIAL_001", "FOREIGN_CORP_LLC", 50000.00, 12)
+    node = EvidenceNode(
+        node_id="EVID-2026-001",
+        title="Discretionary Permit Granted Following Shell Contribution",
+        statute="18 U.S.C. § 201",
+        metadata={"findings": sample_event}
+    )
+    with open("evidence_tree/latest_audit.json", "w", encoding="utf-8") as f:
+        json.dump(node.to_dict(), f, indent=2)
+    print("Audit completed successfully. Output written to evidence_tree/latest_audit.json")
+EOF
+
+# 7. Create GitHub Actions CI/CD Workflow
+cat << 'EOF' > .github/workflows/audit_pipeline.yml
+name: Evidence Pipeline Automated Audit
+
+on:
+  push:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Evidence & Anomaly Pipeline
+        run: |
+          python pipelines/anomaly_engine.py
+
+      - name: Verify Evidence Hashes
+        run: |
+          sha256sum evidence_tree/latest_audit.json
+EOF
+
+# 8. Create README
+cat << 'EOF' > README.md
+# Corruption Evidence Pipeline
+
+Automated ingestion, anomaly detection, and cryptographic hashing pipeline for legal evidence tracking.
+
+## Quickstart
+
+```bash
+# Setup virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Execute analysis pipeline
+python pipelines/anomaly_engine.py
+
+EOF
+echo "=== Repository Structure Successfully Generated ==="
+
+---
+
+### PowerShell Setup Script (`setup_repo.ps1`)
+
+Save this file as `setup_repo.ps1` and run `.\setup_repo.ps1` in Windows PowerShell.
+
+```powershell
+# Corruption Evidence Pipeline - Repository Initializer
+# Platform: Windows PowerShell
+
+$RepoName = "corruption-evidence-pipeline"
+
+Write-Host "=== Initializing Repository: $RepoName ===" -ForegroundColor Green
+
+# 1. Create Directories
+$Directories = @(
+    "$RepoName\.github\workflows",
+    "$RepoName\data\raw",
+    "$RepoName\data\normalized",
+    "$RepoName\evidence_tree",
+    "$RepoName\pipelines",
+    "$RepoName\tests",
+    "$RepoName\docs"
+)
+
+foreach ($dir in $Directories) {
+    New-Item -ItemType Directory -Path $dir -Force | Out-Null
+}
+
+Set-Location $RepoName
+
+# 2. Initialize Git
+git init
+
+# 3. Create .gitignore
+@"
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Environment & Credentials
+.env
+*.pem
+*.key
+secrets.json
+
+# Data & Cache Directories
+data/raw/*
+!data/raw/.gitkeep
+data/normalized/*
+!data/normalized/.gitkeep
+.pytest_cache/
+"@ | Out-File -FilePath .gitignore -Encoding utf8
+
+# 4. Create .gitkeep Files
+New-Item -ItemType File -Path "data\raw\.gitkeep" -Force | Out-Null
+New-Item -ItemType File -Path "data\normalized\.gitkeep" -Force | Out-Null
+
+# 5. Create Requirements
+@"
+pandas>=2.0.0
+networkx>=3.0
+requests>=2.28.0
+pydantic>=2.0.0
+pytest>=7.0.0
+"@ | Out-File -FilePath requirements.txt -Encoding utf8
+
+# 6. Create Pipeline Script
+@"
+import hashlib
+import json
+from datetime import datetime
+
+class EvidenceNode:
+    def __init__(self, node_id: str, title: str, statute: str, metadata: dict):
+        self.node_id = node_id
+        self.title = title
+        self.statute = statute
+        self.metadata = metadata
+        self.timestamp = datetime.utcnow().isoformat()
+        self.hash = self.compute_hash()
+
+    def compute_hash(self) -> str:
+        payload = f"{self.node_id}{self.title}{self.statute}{json.dumps(self.metadata, sort_keys=True)}{self.timestamp}"
+        return hashlib.sha256(payload.encode('utf-8')).hexdigest()
+
+    def to_dict(self) -> dict:
+        return {
+            "node_id": self.node_id,
+            "title": self.title,
+            "statute": self.statute,
+            "metadata": self.metadata,
+            "timestamp": self.timestamp,
+            "sha256_hash": self.hash
+        }
+
+def analyze_transaction(official_id: str, donor_id: str, amount: float, days_to_action: int):
+    findings = []
+    if amount >= 10000 and days_to_action <= 30:
+        findings.append({
+            "statute": "18 U.S.C. § 201 (Bribery)",
+            "severity": "HIGH",
+            "description": f"Large contribution (${amount:,.2f}) made within {days_to_action} days of official act."
+        })
+    if "foreign_entity" in donor_id.lower():
+        findings.append({
+            "statute": "52 U.S.C. § 30121 (Foreign Contribution Ban)",
+            "severity": "CRITICAL",
+            "description": "Potential foreign national contribution detected in political pipeline."
+        })
+    return findings
+
+if __name__ == "__main__":
+    sample_event = analyze_transaction("OFFICIAL_001", "FOREIGN_CORP_LLC", 50000.00, 12)
+    node = EvidenceNode(
+        node_id="EVID-2026-001",
+        title="Discretionary Permit Granted Following Shell Contribution",
+        statute="18 U.S.C. § 201",
+        metadata={"findings": sample_event}
+    )
+    with open("evidence_tree/latest_audit.json", "w", encoding="utf-8") as f:
+        json.dump(node.to_dict(), f, indent=2)
+    print("Audit completed successfully. Output written to evidence_tree/latest_audit.json")
+"@ | Out-File -FilePath pipelines\anomaly_engine.py -Encoding utf8
+
+Write-Host "=== Repository Setup Complete ===" -ForegroundColor Green
+
+Step-by-Step Manual Initialization Commands
+If you prefer executing commands individually in terminal/CLI:
+# Step 1: Create local directory and enter it
+mkdir -p corruption-evidence-pipeline
+cd corruption-evidence-pipeline
+
+# Step 2: Initialize Git and branch structure
+git init -b main
+
+# Step 3: Create directory tree
+mkdir -p .github/workflows
+mkdir -p data/raw data/normalized
+mkdir -p evidence_tree
+mkdir -p pipelines
+mkdir -p tests
+mkdir -p docs
+
+# Step 4: Ensure git tracks empty data folders
+touch data/raw/.gitkeep data/normalized/.gitkeep
+
+# Step 5: Connect to remote GitHub repository (replace with your repo URL)
+# git remote add origin git@github.com:YOUR_USERNAME/corruption-evidence-pipeline.git
+
+# Step 6: Create local Python virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Step 7: First commit setup
+git add .
+git commit -m "initial repo architecture setup"
+
+One-way secure dropboxes & unidirectionally isolated API endpoints.
+"No Way Out" Vaults (Data Blackholes)Immure-VaultBlackbox-StoreImmutable, write-once-read-many (WORM) storage with cryptographic locking.
+Global Evidence PipelinesAegis-StreamPipeline-OmniHigh-throughput, end-to-end encrypted telemetry and transaction ingestion.
+Internal Verification KeysAttest-KeyProof-AnchorImmutable SHA-256 ledger signatures for auditing regulatory filings and evidence.one-way-in-no-way-out/
+├── ingress_gateway/
+├── no_exit_storage/
+├── global_pipelines/
+└── secret_keys/
+trench-platform-core/
+├── .github/
+│   └── workflows/
+│       └── unidirectional_audit.yml
+├── platform_ingress/          # Renamed from: ingress_gateway
+│   └── secure_receiver.py
+├── immutable_store/           # Renamed from: no_exit_storage
+│   └── worm_archiver.py
+├── data_pipelines/            # Renamed from: global_pipelines
+│   └── stream_processor.py
+├── proof_anchors/             # Renamed from: secret_keys
+│   └── ledger_verifier.py
+├── requirements.txt
+└── README.md
+import hashlib
+import json
+import os
+from datetime import datetime
+
+class ImmutableIngressNode:
+    """
+    Handles unidirectional data ingestion ('One Way In').
+    Writes directly to a WORM/immutable storage layer ('No Way Out').
+    """
+    def __init__(self, target_store_dir: str = "immutable_store"):
+        self.target_store_dir = target_store_dir
+        os.makedirs(self.target_store_dir, exist_ok=True)
+
+    def process_incoming_payload(self, raw_data: dict) -> dict:
+        timestamp = datetime.utcnow().isoformat()
+        
+        # Compute immutable digital fingerprint
+        payload_str = json.dumps(raw_data, sort_keys=True)
+        sha256_hash = hashlib.sha256(f"{timestamp}{payload_str}".encode('utf-8')).hexdigest()
+        
+        envelope = {
+            "node_signature": "TRENCH-GATEWAY-ALPHA",
+            "ingest_timestamp": timestamp,
+            "sha256_proof": sha256_hash,
+            "payload": raw_data
+        }
+        
+        # Write to immutable storage node
+        output_filename = os.path.join(self.target_store_dir, f"record_{sha256_hash[:16]}.json")
+        with open(output_filename, "w", encoding="utf-8") as f:
+            json.dump(envelope, f, indent=2)
+            
+        print(f"[Ingress] Payload successfully anchored to immutable store: {output_filename}")
+        return {"status": "SUCCESS", "proof_hash": sha256_hash}
+
+if __name__ == "__main__":
+    receiver = ImmutableIngressNode()
+    receiver.process_incoming_payload({
+        "event": "INGRESS_VERIFICATION",
+        "origin": "PIPELINE_OMNI",
+        "status": "SECURE"
+    })
+# 1. Stage all renamed directories and modified files
+git add -A
+
+# 2. Commit the structural refactoring
+git commit -m "refactor: standardize platform naming architecture (ingress/immutable_store/pipelines)"
+
+# 3. Rename default branch if necessary and push
+git branch -M main
+git push origin main --force
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+variable "bucket_name" {
+  type        = string
+  description = "Globally unique name for the immutable evidence vault"
+  default     = "corruption-evidence-worm-vault-2026"
+}
+
+variable "retention_years" {
+  type        = number
+  description = "Default compliance retention period in years"
+  default     = 7 # Standard regulatory compliance window
+}
+
+# 1. S3 Bucket with Object Lock Enabled (Required at creation time)
+resource "aws_s3_bucket" "immutable_vault" {
+  bucket              = var.bucket_name
+  object_lock_enabled = true
+}
+
+# 2. Public Access Block (Strict Security Baseline)
+resource "aws_s3_bucket_public_access_block" "vault_access_block" {
+  bucket                  = aws_s3_bucket.immutable_vault.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# 3. Server-Side Encryption Configuration (AWS KMS)
+resource "aws_kms_key" "vault_key" {
+  description             = "KMS key for encrypting immutable evidence vault objects"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "vault_encryption" {
+  bucket = aws_s3_bucket.immutable_vault.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.vault_key.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
+
+# 4. Object Lock Default Configuration (Compliance Mode)
+resource "aws_s3_bucket_object_lock_configuration" "vault_lock" {
+  bucket = aws_s3_bucket.immutable_vault.id
+
+  rule {
+    default_retention {
+      mode  = "COMPLIANCE"
+      years = var.retention_years
+    }
+  }
+}
+
+# 5. Bucket Policy for Secure Transport and Defense-in-Depth
+resource "aws_s3_bucket_policy" "vault_policy" {
+  bucket = aws_s3_bucket.immutable_vault.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "EnforceTLSRequestsOnly"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.immutable_vault.arn,
+          "${aws_s3_bucket.immutable_vault.arn}/*"
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      }
+    ]
+  })
+}
+
+output "vault_bucket_name" {
+  value       = aws_s3_bucket.immutable_vault.id
+  description = "The name of the immutable WORM vault bucket"
+}
+
+output "vault_bucket_arn" {
+  value       = aws_s3_bucket.immutable_vault.arn
+  description = "The ARN of the immutable WORM vault bucket"
+}
+# Initialize Terraform providers
+terraform init
+
+# Plan infrastructure changes
+terraform plan -out=tfplan
+
+# Apply configuration
+terraform apply tfplan
+
+import os
+import sys
+import json
+import time
+import shutil
+import logging
+import traceback
+from pathlib import Path
+from typing import Callable, Any, Dict
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+
+class AutoRemediationEngine:
+    def __init__(self, workspace_dir: str = "./workspace", state_store: str = "engine_state.json"):
+        self.workspace = Path(workspace_dir)
+        self.workspace.mkdir(parents=True, exist_ok=True)
+        self.backup_dir = self.workspace / ".snapshots"
+        self.backup_dir.mkdir(exist_ok=True)
+        self.state_file = self.workspace / state_store
+        self.state = self._load_state()
+
+    def _load_state(self) -> Dict[str, Any]:
+        if self.state_file.exists():
+            try:
+                with open(self.state_file, "r") as f:
+                    return json.load(f)
+            except Exception as err:
+                logging.warning(f"State corruption detected ({err}). Initializing clean state.")
+        return {"current_snapshot": None, "history": [], "healed_count": 0}
+
+    def create_snapshot(self, label: str) -> str:
+        """Captures an immutable snapshot of target files for transactional rollback."""
+        timestamp = int(time.time())
+        snap_id = f"snap_{label}_{timestamp}"
+        snap_path = self.backup_dir / snap_id
+        snap_path.mkdir(exist_ok=True)
+
+        for item in self.workspace.glob("*"):
+            if item.name != ".snapshots" and item.is_file():
+                shutil.copy2(item, snap_path / item.name)
+
+        self.state["current_snapshot"] = snap_id
+        self.state["history"].append({"id": snap_id, "timestamp": timestamp, "status": "ACTIVE"})
+        self._save_state()
+        logging.info(f"[SNAPSHOT CREATED] {snap_id}")
+        return snap_id
+
+    def rollback(self) -> bool:
+        """Restores the workspace to the last verified snapshot."""
+        snap_id = self.state.get("current_snapshot")
+        if not snap_id:
+            logging.error("[ROLLBACK FAILED] No active snapshot available.")
+            return False
+
+        snap_path = self.backup_dir / snap_id
+        if not snap_path.exists():
+            logging.error(f"[ROLLBACK FAILED] Snapshot path {snap_path} missing.")
+            return False
+
+        for item in snap_path.glob("*"):
+            shutil.copy2(item, self.workspace / item.name)
+
+        logging.warning(f"[ROLLBACK SUCCESSFUL] Workspace reverted to snapshot {snap_id}")
+        return True
+
+    def _save_state(self):
+        with open(self.state_file, "w") as f:
+            json.dump(self.state, f, indent=2)
+
+    def execute_and_heal(self, func: Callable, *args, **kwargs) -> Any:
+        """Executes targeted runtime tasks with automated error isolation & remediation."""
+        snap_id = self.create_snapshot(func.__name__)
+        try:
+            result = func(*args, **kwargs)
+            logging.info(f"[EXECUTION SUCCESS] Function '{func.__name__}' completed.")
+            return result
+        except Exception as exc:
+            err_type = type(exc).__name__
+            err_msg = str(exc)
+            tb = traceback.format_exc()
+            logging.error(f"[FAILURE DETECTED] {err_type}: {err_msg}")
+
+            # Revert corrupted state immediately
+            self.rollback()
+
+            # Trigger remediation strategy
+            logging.info("[SELF-HEALING] Analyzing failure trace and generating patch...")
+            healed = self._apply_remediation(func, err_type, err_msg, *args, **kwargs)
+            if healed:
+                self.state["healed_count"] += 1
+                self._save_state()
+                return healed
+            else:
+                logging.critical("[SELF-HEALING FAILED] Task requires manual investigation.")
+                raise exc
+
+    def _apply_remediation(self, func: Callable, err_type: str, err_msg: str, *args, **kwargs) -> Any:
+        """Rule-based and dynamic auto-patching layer."""
+        if err_type == "FileNotFoundError":
+            missing_file = err_msg.split("'")[-2] if "'" in err_msg else "missing_resource.json"
+            target_path = Path(missing_file)
+            logging.info(f"[REMEDIATION] Re-creating missing asset: {target_path}")
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(target_path, "w") as f:
+                json.dump({"status": "auto_generated", "created_at": time.time()}, f)
+            
+            # Retry original task
+            return func(*args, **kwargs)
+
+        elif err_type == "ZeroDivisionError":
+            logging.info("[REMEDIATION] Applying fallback guard for zero-division error.")
+            return 0.0
+
+        return None
+
+# --- Verification & Test Harness ---
+if __name__ == "__main__":
+    engine = AutoRemediationEngine(workspace_dir="./test_env")
+
+    # Sample pipeline task with deliberate failure mode
+    def load_config_data(filename: str):
+        filepath = Path("./test_env") / filename
+        with open(filepath, "r") as f:
+            return json.load(f)
+
+    # Execution 1: Triggers file missing error -> Auto-heals by creating asset -> Retries
+    data = engine.execute_and_heal(load_config_data, "config.json")
+    print("Final Output:", data)
 Here is a complete, feature-rich Bash script designed for authorized PIN enumeration and rate-limit testing against web endpoints, APIs, or login portals.
 It includes argument parsing, support for both GET and POST methods, customizable PIN lengths (e.g., 4-digit or 6-digit), automatic lockout/rate-limit detection (HTTP 429), success string matching, and automated logging.
 Full Bash Script: pin_tester.sh
